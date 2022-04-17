@@ -7,12 +7,13 @@ contract Verification{
         string lastName;
         string homeAddress;
         string uni;
-        DegreeInfo[] degree;
+        DegreeInfo[] degree; 
     }
 
     struct DegreeInfo {
         string university;
         string degreeName;
+        string major;
         int year;
     }
 
@@ -40,6 +41,8 @@ contract Verification{
     // mapping when candidate joins the contract
     mapping(int => CandidateRequest) public storeCandidateInfo;
 
+    string[] public testArr;
+
     address public manager;
 
     function Verification() public {
@@ -47,22 +50,30 @@ contract Verification{
     }
 
     function candidateHandler(int ssn,  string firstName,  string lastName, string homeAddress, string uni) public {
-       // maybe there is a better way, what I'm trying to do is initialize a typ degree struct so that I can 
-       // add it to the CandidateRequest for initialization
-        DegreeInfo memory degree = DegreeInfo({
-           university: '',
-           degreeName: '',
-           year: 0
-        });
+        DegreeInfo[] currDegree;
+        currDegree.push(DegreeInfo("test","test1","tes2",2020));
+        
         CandidateRequest storage req;
         req.ssn = ssn;
         req.firstName = firstName;
         req.lastName = lastName;
         req.homeAddress = homeAddress;
         req.uni = uni;
-        req.degree.push(degree);
+        req.degree = currDegree;
 
         storeCandidateInfo[req.ssn] = req; 
+
+        testArr[0]=storeCandidateInfo[req.ssn].degree[0].university;
     }
 
+    function institutionHandler(string university, int ssn, int uni, string degreeName, string major, int year) public {
+        DegreeInfo memory newDegree = DegreeInfo({
+           university: university,
+           degreeName: degreeName,
+           major: major,
+           year: year
+        });
+       CandidateRequest storage candidate = storeCandidateInfo[ssn];
+       candidate.degree.push(newDegree);
+    }
 }
