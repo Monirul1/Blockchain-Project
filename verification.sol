@@ -1,4 +1,5 @@
 pragma solidity ^0.4.17;
+pragma experimental ABIEncoderV2;
 
 contract Verification{
     struct CandidateRequest{
@@ -7,7 +8,6 @@ contract Verification{
         string lastName;
         string homeAddress;
         string uni;
-        DegreeInfo[] degree; 
     }
 
     struct DegreeInfo {
@@ -17,14 +17,6 @@ contract Verification{
         int year;
     }
 
-    struct InstitutionRequest{
-        string institutionName;
-        string firstName;
-        string lastName;
-        string uni;
-        string degreeName;
-        int year;
-    }
 
     struct EmployerRequest{
         string firstName;
@@ -35,13 +27,13 @@ contract Verification{
     // response that will be sent to employer
     struct EmployerReponse {
         CandidateRequest candidateInfo;
-        InstitutionRequest institutionInfo;
+        DegreeInfo[] degreeInfo;
     }
 
     // mapping when candidate joins the contract
+    mapping(int => DegreeInfo[]) public storeCandidateDegreeInfo;
     mapping(int => CandidateRequest) public storeCandidateInfo;
 
-    string[] public testArr;
 
     address public manager;
 
@@ -50,30 +42,28 @@ contract Verification{
     }
 
     function candidateHandler(int ssn,  string firstName,  string lastName, string homeAddress, string uni) public {
-        DegreeInfo[] currDegree;
-        currDegree.push(DegreeInfo("test","test1","tes2",2020));
-        
-        CandidateRequest storage req;
-        req.ssn = ssn;
-        req.firstName = firstName;
-        req.lastName = lastName;
-        req.homeAddress = homeAddress;
-        req.uni = uni;
-        req.degree = currDegree;
-
-        storeCandidateInfo[req.ssn] = req; 
-
-        testArr[0]=storeCandidateInfo[req.ssn].degree[0].university;
+        CandidateRequest storage newCandidate;
+        newCandidate.ssn = ssn;
+        newCandidate.firstName = firstName;
+        newCandidate.lastName = lastName;
+        newCandidate.homeAddress = homeAddress;
+        newCandidate.uni = uni;
+        storeCandidateInfo[ssn] = newCandidate;
     }
 
-    function institutionHandler(string university, int ssn, int uni, string degreeName, string major, int year) public {
-        DegreeInfo memory newDegree = DegreeInfo({
-           university: university,
-           degreeName: degreeName,
-           major: major,
-           year: year
-        });
-       CandidateRequest storage candidate = storeCandidateInfo[ssn];
-       candidate.degree.push(newDegree);
+    function institutionHandler(string university, int ssn, string degreeName, string major, int year) public {
+        DegreeInfo storage newDegree;
+        newDegree.university = university;
+        newDegree.degreeName = degreeName;
+        newDegree.major = major;
+        newDegree.year = year;
+        storeCandidateDegreeInfo[ssn].push(newDegree); 
+    }
+
+    function employerHandler(int ssn, string firstName, string lastName) public returns(EmployerReponse) {
+        EmployerReponse storage newEmployerResponse;
+        newEmployerResponse.candidateInfo = storeCandidateInfo[ssn];
+        newEmployerResponse.degreeInfo = storeCandidateDegreeInfo[ssn];
+        return newEmployerResponse;
     }
 }
