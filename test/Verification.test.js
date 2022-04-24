@@ -2,7 +2,8 @@ const assert = require("assert");
 const ganache = require("ganache-cli");
 const Web3 = require("web3");
 const web3 = new Web3(ganache.provider());
-const { interface, bytecode } = require("../compile");
+
+const compiled = require("../build/Verification.json")
 
 let accounts;
 let verf;
@@ -10,9 +11,9 @@ let verf;
 beforeEach(async () => {
   // Get a list of all accounts
   accounts = await web3.eth.getAccounts();
-  verf = await new web3.eth.Contract(JSON.parse(interface))
+  verf = await new web3.eth.Contract(JSON.parse(compiled.interface))
     .deploy({
-      data: bytecode,
+      data: compiled.bytecode,
     })
     .send({ from: accounts[0], gas: "1000000" });
 });
