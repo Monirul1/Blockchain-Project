@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity >=0.4.22 <0.9.0;
 
 contract Verification {
     struct CandidateRequest{
@@ -34,27 +34,31 @@ contract Verification {
     mapping(int => CandidateRequest) public storeCandidateInfo;
      
     address public manager;
-    function Verification() public {
-        manager = msg.sender;
+    // function Verification() public {
+    //     manager = msg.sender;
+    // }
+
+    function candidateHandler(int ssn,  string memory firstName,  string memory lastName, string memory homeAddress, string memory uni) public {
+        // CandidateRequest storage newCandidate;
+        // newCandidate.ssn = ssn;
+        // newCandidate.firstName = firstName;
+        // newCandidate.lastName = lastName;
+        // newCandidate.homeAddress = homeAddress;
+        // newCandidate.uni = uni;
+        // CandidateRequest memory newCandidate = CandidateRequest(ssn, firstName, lastName, homeAddress, uni);
+        // CandidateRequest newCandidate;
+        storeCandidateInfo[ssn] = CandidateRequest(ssn, firstName, lastName, homeAddress, uni);
     }
 
-    function candidateHandler(int ssn,  string firstName,  string lastName, string homeAddress, string uni) public {
-        CandidateRequest storage newCandidate;
-        newCandidate.ssn = ssn;
-        newCandidate.firstName = firstName;
-        newCandidate.lastName = lastName;
-        newCandidate.homeAddress = homeAddress;
-        newCandidate.uni = uni;
-        storeCandidateInfo[ssn] = newCandidate;
-    }
-
-    function institutionHandler(string university, int ssn, string degreeName, string major, int year) public {
-        DegreeInfo storage newDegree;
-        newDegree.university = university;
-        newDegree.degreeName = degreeName;
-        newDegree.major = major;
-        newDegree.year = year;
-        storeCandidateDegreeInfo[ssn].push(newDegree); 
+    function institutionHandler(string memory university, int ssn, string memory degreeName, string memory major, int year) public {
+        // DegreeInfo storage newDegree;
+        // newDegree.university = university;
+        // newDegree.degreeName = degreeName;
+        // newDegree.major = major;
+        // newDegree.year = year;
+        // storeCandidateDegreeInfo[ssn].push(newDegree); 
+        // DegreeInfo memory newDegree = DegreeInfo(university, degreeName, major, year);
+        storeCandidateDegreeInfo[ssn].push(DegreeInfo(university, degreeName, major, year));
     }
 
     // function employerHandler(int ssn, string firstName, string lastName) public returns(EmployerReponse) {
